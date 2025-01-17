@@ -30,12 +30,32 @@ export -f fetch_pokemon_data
 export pokemon_api
 export output_dir
 
+# Array to keep track of job PIDs
+job_pids=()
+
 # Fetch data for each Pokémon in parallel
 for pokemon in "${pokemon_list[@]}"; do
   fetch_pokemon_data "$pokemon" &
+  job_pids+=("$!") # Capture the PID of the background process
 done
 
+# Function to clean up background jobs
+cleanup_jobs() {
+  echo "Cleaning up background jobs..."
+  for pid in "${job_pids[@]}"; do
+    if kill -0 "$pid" 2>/dev/null; then
+      kill "$pid"
+      echo "Killed job with PID $pid"
+    fi
+  done
+}
+
+# Trap SIGINT and SIGTERM to clean up background jobs
+trap cleanup_jobs SIGINT SIGTERM
+
 # Wait for all background processes to complete
-wait
+for pid in "${job_pids[@]}"; do
+  wait "$pid"
+done
 
 echo "All Pokémon data fetched."
