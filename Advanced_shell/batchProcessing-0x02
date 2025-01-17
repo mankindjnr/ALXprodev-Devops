@@ -4,9 +4,19 @@ pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
 
 # create a for loop to iterate over the pokemon list
 for pokemon in ${pokemon_list[@]}; do
-    pokemon_results=$(curl -s -X GET "https://pokeapi.co/api/v2/pokemon/$pokemon" > $pokemon.json)
-    if [ $? -ne 0 ]; then
-        echo "Error: curl command failed for $pokemon" > errors.txt
+    attempt=0
+    success=false
+    while [ $attempt -lt 3 ]; do
+        pokemon_results=$(curl -s -X GET "https://pokeapi.co/api/v2/pokemon/$pokemon" > $pokemon.json)
+        if [ $? -eq 0 ]; then
+            success=true
+            break
+        fi
+        attempt=$((attempt+1))
+        sleep 1 # adding a 1 second delay between each request - to avoid rate limiting
+    done
+    if [ "$success" = false ]; then
+        echo "Error: Failed to fetch data for $pokemon" > errors.txt
     fi
     sleep 1 # adding a 1 second delay between each request - to avoid rate limiting
 done
