@@ -1,0 +1,16 @@
+#!/bin/bash
+pokemon_file="data.json"
+
+# Check if the file exists
+if [[ -f $pokemon_file ]]; then
+    #reading specific values
+    name=$(jq -r '.forms[0].name' $pokemon_file)
+    height=$(jq -r '.height' $pokemon_file)
+    weight=$(jq -r '.weight' $pokemon_file)
+    type=$(jq -r '.types[0].type.name' $pokemon_file)
+
+    echo "$name is of type $type, weighs ${weight}kg, and is ${height}m tall."
+else
+    echo "Error: File not found" > errors.txt
+    exit 1 # exit with an error code
+fi
