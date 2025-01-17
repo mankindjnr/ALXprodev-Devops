@@ -4,10 +4,14 @@ pokemon_file="data.json"
 # Check if the file exists
 if [[ -f $pokemon_file ]]; then
     #reading specific values
-    name=$(jq -r '.forms[0].name' $pokemon_file)
-    formatted_height=$(jq -r '.height' $pokemon_file)
-    formatted_weight=$(jq -r '.weight' $pokemon_file)
+    pokemon_name=$(jq -r '.forms[0].name' $pokemon_file)
+    height=$(jq -r '.height' $pokemon_file)
+    weight=$(jq -r '.weight' $pokemon_file)
     type=$(jq -r '.types[0].type.name' $pokemon_file)
+
+    formatted_weight=$(awk "BEGIN {print $weight/10}")
+    formatted_height=$(awk "BEGIN {print $height/10}")
+    name=$(sed 's/p/P/' <<< $pokemon_name)
 
     echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
 else
