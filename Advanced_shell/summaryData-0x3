@@ -1,0 +1,24 @@
+#!/bin/bash
+pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+
+# create a for loop to iterate over the pokemon list
+for pokemon in ${pokemon_list[@]}; do
+    if [[ -f $pokemon.json ]]; then
+        pokemon_name=$(jq -r '.forms[0].name' $pokemon.json)
+        height=$(jq -r '.height' $pokemon.json)
+        weight=$(jq -r '.weight' $pokemon.json)
+
+        formatted_weight=$(awk "BEGIN {print $weight/10}")
+        formatted_height=$(awk "BEGIN {print $height/10}")
+        name=$(sed 's/.*/\L&/; s/^./\U&/' <<< "$pokemon_name")
+
+        # generate a csv file with the extracted data name, height and weight
+        echo "$name, $formatted_height, $formatted_weight" >> $pokemon.csv
+    else
+        echo "Error: File not found for $pokemon" > errors.txt
+    fi
+done
+
+# use awk to calculate the average height and weight of the pokemon
+#         column 2: height, column 3: weight
+awk -F, '{sum_height+=$2; sum_weight+=$3} END {print "Average Height: " sum_height/NR "m"; print "Average Weight: " sum_weight/NR "kg"}' *.csv
