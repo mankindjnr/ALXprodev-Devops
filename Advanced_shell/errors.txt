@@ -1,0 +1,1 @@
+Error: curl command failed for [Bulbasaur,Ivysaur,Venusaur,Charmander,Charmeleon]

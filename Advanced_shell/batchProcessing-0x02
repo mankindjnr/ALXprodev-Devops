@@ -1,0 +1,12 @@
+#!/bin/bash
+pokemon_api=$(curl -s -X GET "https://pokeapi.co/api/v2/pokemon/")
+pokemon_list=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+
+# create a for loop to iterate over the pokemon list
+for pokemon in ${pokemon_list[@]}; do
+    pokemon_results=$(curl -s -X GET "https://pokeapi.co/api/v2/pokemon/$pokemon" > $pokemon.json)
+    if [ $? -ne 0 ]; then
+        echo "Error: curl command failed for $pokemon" > errors.txt
+    fi
+    sleep 1 # adding a 1 second delay between each request - to avoid rate limiting
+done
