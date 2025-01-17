@@ -1,0 +1,6 @@
+#!/bin/bash
+api_results=$(curl -s -X GET "https://pokeapi.co/api/v2/pokemon/pikachu" > data.json)
+# log the errors to error.txt if the curl command fails
+if [ $? -ne 0 ]; then
+    echo "Error: curl command failed" > error.txt
+fi
